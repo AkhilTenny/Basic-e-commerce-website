@@ -1,0 +1,39 @@
+
+
+<section></section>
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-md-6">
+        <h2 class="text-center">Edit Product</h2>
+        <form action="/admin/edit-product/{{product._doc._id}}" method="POST" enctype="multipart/form-data">
+          <label for="">Name</label>
+          <input type="text" name="Name" class="form-control" value="{{product._doc.name}}" />
+          <label for="">Brand</label>
+          <input type="text" name="Brand" class="form-control" value="{{product._doc.brand}}" />
+          <label for="">Description</label>
+          <input type="text" name="Description" class="form-control" value="{{product._doc.Description}}" />
+          <label for="">Image</label>
+          <br>
+          <img src="/images/{{product._doc._id}}.jpg" alt="" style="width: 300px;" id="preview-image">
+          <input type="file" name="Image" class="form-control" onchange="fileDisplay(event)" >
+          <br>   
+          <button type="submit" class="btn btn-success mt-4">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+ 
+</section>
+<script>
+  function fileDisplay(event){
+    const file = event.target.files[0]
+    const fileReader = new FileReader();
+
+    fileReader.readAsDataURL(file);
+
+    fileReader.onload = function(event){
+      document.getElementById('preview-image').src = event.target.result; 
+
+     }
+  }
+</script>

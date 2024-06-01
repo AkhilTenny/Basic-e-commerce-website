@@ -1,0 +1,32 @@
+<section>
+<div class="container">
+  <div class="row mt-4"></div>
+<a href="/admin/add-product"><button type="button" class="btn btn-primary  ">Add Product</button></a>
+<table class="table mt-5">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Name</th>
+      <th scope="col">Company</th>
+      <th scope="col">Image</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each products}}
+    <tr>
+      <th scope="row">{{this.No}}</th>
+      <td>{{this._doc.name}}</td>
+      <td>{{this._doc.brand}}</td>
+      <td><img src="/images/{{this._doc._id}}.jpg" alt="" style="width: 50px;"></td>
+      <td>
+        <a href="/admin/edit-product/{{this._doc._id}}"><button class="btn btn-primary">Edit</button></a>
+        <a href="/admin/delete-product/{{this._doc._id}}"><button  class="btn btn-danger">Delete</button></a>
+      </td>
+    </tr>
+    {{/each}}
+    
+  </tbody>
+</table>
+</div>
+</div>
+</section>

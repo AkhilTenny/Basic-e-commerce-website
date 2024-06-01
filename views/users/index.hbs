@@ -1,0 +1,17 @@
+
+<div class="container mt-5 col-8" >
+  <div class="row">
+    {{#each products}}
+    <div class="card shadow" style="width: 18rem;">
+     <img class="card-img-top" src="images/{{this._doc._id}}.jpg" alt="Card image cap" />
+        <div class="card-body">
+        <h5 class="card-title">{{this._doc.name}}</h5>
+        <p class="card-text">{{this._doc._id}}</p>
+          <button class="btn btn-primary" onclick="addToKart('{{this._doc._id}}')">Add To Kart</button>
+        <h1>{{user.id}}</h1>
+        
+      </div>
+    </div>
+    {{/each}}
+  </div>
+</div>

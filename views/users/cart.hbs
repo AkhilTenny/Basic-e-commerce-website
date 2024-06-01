@@ -1,0 +1,31 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">iamge</th>
+      <th scope="col">name</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Remove</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each products}}
+    <tr>
+      <th scope="row">1</th>
+      <td>
+        <img src="/images/{{this._doc._id}}.jpg"  width="50px" alt="">
+
+      </td>
+      <td>{{this._doc.name}}</td>
+      <td class="row" >
+        <button class="cart-item-count">-</button>
+        <h3>{{this._doc.count}}</h3>
+        <button class="cart-item-count">+</button>
+        </td>
+        <td>
+          <button class="btn btn-danger">delete</button>
+        </td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>

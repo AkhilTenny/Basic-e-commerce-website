@@ -47,6 +47,7 @@ router.post("/signin",function(req,res){
         req.session.loggedin = true;
         req.session.user = data.username
         req.session._Id = data._id.toString()
+        
         console.log(req.session.id)
         res.redirect('/')
       })}
@@ -80,11 +81,15 @@ router.get("/logout",(req,res)=>{
 
 })
 
+router.get("/cart",checkLogedIn,(req,res)=>{
+  //only to check the user is logged in 
+})
+
 router.get("/cart/:id",checkLogedIn,(req,res)=>{
   userHelpers.kartFindProducts(req.params.id).then((value)=>{
   productHelpers.findProductsKart(value).then((products)=>{
-    console.log(products)
-  res.render("./users/cart", {  admin: false,user ,products})
+  
+  res.render("./users/cart", {  admin: false,user,products})
   
   })
   })  
@@ -93,8 +98,12 @@ router.get("/cart/:id",checkLogedIn,(req,res)=>{
 router.get("/add-kart/:id", async(req,res)=>{
  
   userHelpers.addToKart(req.session._Id,req.session.user,req.params.id)
-  console.log(await userHelpers.kartCount(req.session._Id))
   res.json(await userHelpers.kartCount(req.session._Id))
 })
 
+router.post('/changeProductCount',async(req,res)=>{
+  userHelpers.changeKartProductCount(req.body)
+  res.json("hai")
+})
+  
 module.exports = router

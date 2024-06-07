@@ -12,20 +12,32 @@
     {{#each products}}
     <tr>
       <th scope="row">1</th>
-      <td>
+      <td>  
         <img src="/images/{{this._doc._id}}.jpg"  width="50px" alt="">
 
       </td>
       <td>{{this._doc.name}}</td>
       <td class="row" >
-        <button class="cart-item-count">-</button>
-        <h3>{{this._doc.count}}</h3>
-        <button class="cart-item-count">+</button>
+        {{#if this._doc.count}}
+        {{#if (NoEq this._doc.count 1)}}
+          <button class="cart-item-count btn "  onclick="changeProductCount('{{this._doc._id}}','{{../user.id}}',-1)" >-</button>
+         {{else}}
+         <button class="cart-item-count btn "  onclick="changeProductCount('{{this._doc._id}}','{{../user.id}}',-1)">-</button>
+         {{/if}}
+
+      {{/if}}
+
+        <div class="ml-2 mr-2">
+          <h3 id="item-count-{{this._doc._id}}">{{this._doc.count}}</h3>
+        </div>        
+        <button class="cart-item-count btn"  onclick="changeProductCount('{{this._doc._id}}','{{../user.id}}',+1)">+</button>
         </td>
         <td>
           <button class="btn btn-danger">delete</button>
         </td>
     </tr>
     {{/each}}
+ 
   </tbody>
 </table>
+

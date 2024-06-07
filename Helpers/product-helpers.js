@@ -25,7 +25,6 @@ async function addProduct(data,id){
   await newProduct.save();
   id(newProduct._id.valueOf().toString()); 
   
-  
 }
 function findProducts(){
   return new Promise(async function(resolve,reject){

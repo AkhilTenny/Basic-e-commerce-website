@@ -131,11 +131,57 @@ async function doLogin(logData){
   })
  }
 
-module.exports={
+ async function changeKartProductCount(about){
+  return new Promise(async(resolve,reject)=>{
+    let userid = about.userId
+   let productId  = about.proId
+    if(about.Count == +1){
+   await kart.findOneAndUpdate({userId:about.userId},{$push:{products: {product_id:about.proId}}})
+   
+    }else if(about.Count == -1){
+      let removingProductids = await kart.aggregate([
+        {
+          $match: {
+            userId: about.userId,
+          },
+        },
+        {
+          $unwind: {
+            path: "$products",
+          },
+        },
+        {
+          $project: {
+            id: "$products._id",
+            productId: "$products.product_id",
+          },
+        },
+        {
+          $match:
+             
+            {
+              productId: about.proId, 
+            },
+        },
+        {
+          $project: {
+            id:"$id"
+          }
+        }
+      ])
+      await kart.findOneAndUpdate({userId:about.userId},{$pull:{products: {_id:removingProductids[0].id}}})
+
+
+    } 
+  })
+ }
+ 
+module.exports={  
   doSignUp,
   doLogin,
   addToKart,
   kartFindProducts,
-  kartCount
+  kartCount,
+  changeKartProductCount
   
 }

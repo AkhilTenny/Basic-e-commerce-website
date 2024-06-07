@@ -8,6 +8,7 @@ var fileUpload = require('express-fileupload')
 var mongooseFile = require('./config/connection.js')
 var session = require('express-session')
 const bodyParser = require('body-parser');
+const Handlebars = require('handlebars');
 
 
 //connect to Database
@@ -62,6 +63,10 @@ var hbs = exHBS.create({
   layoutsDir:'./views/layout/',
   partialsDir:'./views/partials/'
 })
+
+Handlebars.registerHelper('NoEq', function (a, b) {
+  return a != b;
+});
 //strict unblocked
 //exHBS.create({ strict: false });
 

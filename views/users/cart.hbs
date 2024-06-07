@@ -1,16 +1,19 @@
+ {{#if products}}
 <table class="table">
+ 
   <thead>
     <tr>
       <th scope="col">#</th>
-      <th scope="col">iamge</th>
-      <th scope="col">name</th>
+      <th scope="col">Image</th>
+      <th scope="col">Product</th>
       <th scope="col">Quantity</th>
       <th scope="col">Remove</th>
     </tr>
   </thead>
   <tbody>
+    
     {{#each products}}
-    <tr>
+    <tr id="product-list-{{this._doc._id}}">
       <th scope="row">1</th>
       <td>  
         <img src="/images/{{this._doc._id}}.jpg"  width="50px" alt="">
@@ -20,9 +23,9 @@
       <td class="row" >
         {{#if this._doc.count}}
         {{#if (NoEq this._doc.count 1)}}
-          <button class="cart-item-count btn "  onclick="changeProductCount('{{this._doc._id}}','{{../user.id}}',-1)" >-</button>
+          <button class="cart-item-count btn " id="count-dec-btn-{{this._doc._id}}" onclick="changeProductCount('{{this._doc._id}}','{{../user.id}}',-1)" >-</button>
          {{else}}
-         <button class="cart-item-count btn "  onclick="changeProductCount('{{this._doc._id}}','{{../user.id}}',-1)">-</button>
+         <button class="cart-item-count btn " id="count-dec-btn-{{this._doc._id}}"  onclick="changeProductCount('{{this._doc._id}}','{{../user.id}}',-1)"disabled>-</button>
          {{/if}}
 
       {{/if}}
@@ -33,11 +36,14 @@
         <button class="cart-item-count btn"  onclick="changeProductCount('{{this._doc._id}}','{{../user.id}}',+1)">+</button>
         </td>
         <td>
-          <button class="btn btn-danger">delete</button>
+          <button class="btn btn-danger" onclick="removeCartItem('{{this._doc._id}}','{{../user.id}}')">delete</button>
         </td>
     </tr>
     {{/each}}
+    
  
   </tbody>
 </table>
-
+{{else}}
+    <h1>Nothing in your Cart. <a href="/">click here</a> to continue shopping</h1>
+    {{/if}}

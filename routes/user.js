@@ -105,5 +105,10 @@ router.post('/changeProductCount',async(req,res)=>{
   userHelpers.changeKartProductCount(req.body)
   res.json("hai")
 })
+
+router.post("/removeCartItem",async(req,res)=>{
+  userHelpers.deleteProductInUserKart(req.body)
+  res.json("hai")
+})
   
 module.exports = router

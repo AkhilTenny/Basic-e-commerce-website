@@ -175,6 +175,16 @@ async function doLogin(logData){
     } 
   })
  }
+ async function deleteProductInUserKart(data){
+  console.log(data)  
+  await kart.findOneAndUpdate({
+      userId:data.userId
+    },{$pull:{
+        products:{
+          product_id:data.proId
+        }
+    }})
+ }
  
 module.exports={  
   doSignUp,
@@ -182,6 +192,7 @@ module.exports={
   addToKart,
   kartFindProducts,
   kartCount,
-  changeKartProductCount
+  changeKartProductCount,
+  deleteProductInUserKart
   
 }

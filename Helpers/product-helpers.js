@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const crypto = require("crypto");
 
 
 const productSchema = mongoose.Schema({
@@ -6,29 +7,36 @@ const productSchema = mongoose.Schema({
   name: String,
   brand: String,
   Description: String,
-  count:Number
+  Price:Number,
+  count:Number,
+  cryptoId:String
 })
 
 const product = mongoose.model("products",productSchema);
 
 async function addProduct(data,id){
  
-
+  const randomBytes = crypto.randomBytes(12)
+  const uniqueId = randomBytes.toString('hex')
+  
   const newProduct = new product({
   
   name: data.Name,
   brand: data.Brand,
   Description: data.Description,
-  count:0
+  Price: data.Price,
+  count:0,
+  cryptoId:uniqueId
 
   })
   await newProduct.save();
-  id(newProduct._id.valueOf().toString()); 
+  id(uniqueId); 
   
 }
 function findProducts(){
   return new Promise(async function(resolve,reject){
   const products = await product.find({})
+ 
   resolve(products)
 
 })}
@@ -52,32 +60,62 @@ function editProduct(proId,productInfo){
       name: productInfo.Name,
       brand: productInfo.Brand,
       Description: productInfo.Description,
+      Price:productInfo.Price,
       count:0
   
     })
   })
 }
-function findProductsKart(kartProductsInfo){
+function findProductsKart(userid){
+  
   return new Promise(async(resolve,reject)=>{
-    var kartProducts=[]
-    var count = []
-    for(let i=0;i<kartProductsInfo.length;i++){
-     let productInfo = await product.findOne({_id:kartProductsInfo[i]._id})
-       if (productInfo){
-        kartProducts[i] = productInfo
-        kartProducts[i].count = kartProductsInfo[i].count
-
-
-       }
-    }
+    let kartProducts = kart.aggregate(
+      [
+        {
+          $match: {
+            userId: userid,
+          },
+        },
+       
+        {
+          $unwind: {
+            path: "$products",
+          },
+        },
+        {
+          $group: {
+            _id: "$products.product_crypto_id",
+            count:{$sum:1}
+          }
+        },
+        {
+          $lookup: {
+            from: "products",
+            localField: "_id",
+            foreignField: "cryptoId",
+            as: "productsDetails"
+          }
+        },
+        {
+          $project: {
+            count:"$count",
+            product:"$productsDetails"
+            
+          }
+          
+        },
+      ]
+    )
     resolve(kartProducts)
    
 
   })
 }
 
-
-
+async function findProductCryptoId(id){
+  let foundproduct = await product.findOne({_id:id})
+  return foundproduct.cryptoId
+}
 
 
 module.exports={
@@ -88,4 +126,5 @@ module.exports={
   findProduct,
   findProductsKart,
   editProduct,
+  findProductCryptoId,
 }

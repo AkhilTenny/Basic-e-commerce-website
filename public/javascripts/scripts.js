@@ -43,8 +43,7 @@ function changeProductCount(proid,userid,count){
       },
       method:"POST",
       success:(responce)=>{
-        console.log(responce)
-        $('#product-list-'+proid).remove()
+        location.reload()
       }
     })
   }

@@ -9,6 +9,8 @@
       <th scope="col">Name</th>
       <th scope="col">Company</th>
       <th scope="col">Image</th>
+      <th scope="col">Price</th>
+       <th scope="col">Edit/Delete</th>
     </tr>
   </thead>
   <tbody>
@@ -17,7 +19,8 @@
       <th scope="row">{{this.No}}</th>
       <td>{{this._doc.name}}</td>
       <td>{{this._doc.brand}}</td>
-      <td><img src="/images/{{this._doc._id}}.jpg" alt="" style="width: 50px;"></td>
+      <td><img src="/images/{{this._doc.cryptoId}}.jpg" alt="" style="width: 50px;"></td>
+      <td>{{this._doc.Price}}</td>
       <td>
         <a href="/admin/edit-product/{{this._doc._id}}"><button class="btn btn-primary">Edit</button></a>
         <a href="/admin/delete-product/{{this._doc._id}}"><button  class="btn btn-danger">Delete</button></a>

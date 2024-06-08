@@ -29,7 +29,6 @@ router.get("/",async function (req, res, next) {
    
    user.name = req.session.user
    user.id = req.session._Id
-   console.log(user)
     res.render("./users/index", { products, admin: false,user,kartcount });
   });
 });
@@ -47,12 +46,9 @@ router.post("/signin",function(req,res){
         req.session.loggedin = true;
         req.session.user = data.username
         req.session._Id = data._id.toString()
-        
-        console.log(req.session.id)
         res.redirect('/')
       })}
   else{
-    console.log("passwords doesn't matched")
   }
 })
 
@@ -62,7 +58,6 @@ router.post('/login',(req,res)=>{
       req.session.loggedin = true;
       req.session.user = data.username
       req.session._Id = data.Id
-      console.log(data.Id)
     res.redirect('/')
     }else{
       req.session.loginErr = "Invalid Username or Password"
@@ -83,16 +78,15 @@ router.get("/logout",(req,res)=>{
 
 router.get("/cart",checkLogedIn,(req,res)=>{
   //only to check the user is logged in 
-})
+})    
 
 router.get("/cart/:id",checkLogedIn,(req,res)=>{
-  userHelpers.kartFindProducts(req.params.id).then((value)=>{
-  productHelpers.findProductsKart(value).then((products)=>{
-  
+ 
+  userHelpers.findProductsKart(req.params.id).then((products)=>{
   res.render("./users/cart", {  admin: false,user,products})
   
   })
-  })  
+   
 })
 
 router.get("/add-kart/:id", async(req,res)=>{
@@ -109,6 +103,9 @@ router.post('/changeProductCount',async(req,res)=>{
 router.post("/removeCartItem",async(req,res)=>{
   userHelpers.deleteProductInUserKart(req.body)
   res.json("hai")
+})
+router.get('/place-order/:id',async(req,res)=>{
+  userHelpers.cartTotalAmount(req.params.id)
 })
   
 module.exports = router

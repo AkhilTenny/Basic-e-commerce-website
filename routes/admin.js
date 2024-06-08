@@ -56,14 +56,14 @@ router.post("/add-product",function(req,res,next){
   res.render('admin/edit',{product})
  })
 
- router.post('/edit-product/:id',(req,res)=>{
+ router.post('/edit-product/:id',async (req,res)=>{
    helpers.editProduct(req.params.id,req.body)
    if(req.files){
     let image = req.files.Image
-    
-    image.mv('./public/images/'+req.params.id+'.jpg')
+    const cryptoId = await helpers.findProductCryptoId(req.params.id)
+    image.mv('./public/images/'+cryptoId+'.jpg')
    }
    res.redirect('/admin/view-products')
-  }
+  } 
 )
 module.exports = router;

@@ -6,6 +6,7 @@
       <th scope="col">#</th>
       <th scope="col">Image</th>
       <th scope="col">Product</th>
+      <th scope="col">Price</th>
       <th scope="col">Quantity</th>
       <th scope="col">Remove</th>
     </tr>
@@ -14,32 +15,41 @@
     
     {{#each products}}
     <tr id="product-list-{{this._doc._id}}">
-      <th scope="row">1</th>
+      <td scope="row">1</td>
       <td>  
-        <img src="/images/{{this._doc._id}}.jpg"  width="50px" alt="">
+        <img src="/images/{{this.cryptoId}}.jpg"  width="50px" alt="">
 
       </td>
-      <td>{{this._doc.name}}</td>
+      <td>{{this.name}}</td>
+            <td>{{this.Price}}</td>
+
       <td class="row" >
-        {{#if this._doc.count}}
-        {{#if (NoEq this._doc.count 1)}}
-          <button class="cart-item-count btn " id="count-dec-btn-{{this._doc._id}}" onclick="changeProductCount('{{this._doc._id}}','{{../user.id}}',-1)" >-</button>
+        {{#if this.count}}
+        {{#if (NoEq this.count 1)}}
+          <button class="cart-item-count btn " id="count-dec-btn-{{this._id}}" onclick="changeProductCount('{{this._id}}','{{../user.id}}',-1)" >-</button>
          {{else}}
-         <button class="cart-item-count btn " id="count-dec-btn-{{this._doc._id}}"  onclick="changeProductCount('{{this._doc._id}}','{{../user.id}}',-1)"disabled>-</button>
+         <button class="cart-item-count btn " id="count-dec-btn-{{this._id}}"  onclick="changeProductCount('{{this._id}}','{{../user.id}}',-1)"disabled>-</button>
          {{/if}}
 
       {{/if}}
 
         <div class="ml-2 mr-2">
-          <h3 id="item-count-{{this._doc._id}}">{{this._doc.count}}</h3>
+          <h3 id="item-count-{{this._id}}">{{this.count}}</h3>
         </div>        
-        <button class="cart-item-count btn"  onclick="changeProductCount('{{this._doc._id}}','{{../user.id}}',+1)">+</button>
+        <button class="cart-item-count btn"  onclick="changeProductCount('{{this._id}}','{{../user.id}}',+1)">+</button>
         </td>
         <td>
-          <button class="btn btn-danger" onclick="removeCartItem('{{this._doc._id}}','{{../user.id}}')">delete</button>
+          <button class="btn btn-danger" onclick="removeCartItem('{{this._id}}','{{../user.id}}')">delete</button>
         </td>
     </tr>
     {{/each}}
+    <td></td>
+    <td>Items</td>
+     <td></td>
+    <td>Total</td>
+    <td>Rs. 50,999</td>
+    <td><a href="/place-order/{{user.id}}"> <button class="btn btn-warning">Place Order</button></a></td>
+
     
  
   </tbody>

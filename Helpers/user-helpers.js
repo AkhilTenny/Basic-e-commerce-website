@@ -1,6 +1,7 @@
 const mongooseFile = require('../config/connection')
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
+const crypto = require("crypto")
 
 const usersSchema = mongoose.Schema({
   gmail:String,
@@ -12,7 +13,7 @@ const user = mongoose.model("users",usersSchema)
 const kartScheme = mongoose.Schema({
   userId:String,
   userName:String,
-  products: [{product_id:String}]
+  products: [{product_crypto_id:String}]
 })
 
 const kart = mongoose.model('userKart',kartScheme)
@@ -42,7 +43,6 @@ async function doLogin(logData){
    bcrypt.compare(logData.password, loggedUser.password,(err,result)=>{
     if(result){
       response.Id = loggedUser._id.toString()
-       console.log("string:",loggedUser._id.toString())
       response.username = loggedUser.username
       response.result = true
       response.issue = false
@@ -62,12 +62,14 @@ async function doLogin(logData){
   })
   
   
-}async function addToKart(usrId,usrNme,proId){
+}async function addToKart(usrId,usrNme,proCryptoId){
   const userKart = await kart.findOne({userId:usrId})
 
+
   if(userKart){
-     
-     const kartProduts = await kart.findOneAndUpdate({userId:usrId},{ $push:{products: {product_id:proId}}})
+     const kartProduts = await kart.findOneAndUpdate({userId:usrId},{ $push:{products: {
+      product_crypto_id: proCryptoId
+     }}})
   }else{
    var newUserKart = new kart({
       userId:usrId,
@@ -75,7 +77,7 @@ async function doLogin(logData){
       Products:[]
     })
     await newUserKart.save()
-    addToKart(usrId,usrNme,proId)
+    addToKart(usrId,usrNme,proCryptoId)
 
   }
 }async function kartFindProducts(id){
@@ -93,7 +95,7 @@ async function doLogin(logData){
           },
         },{
           $group: {
-            _id: "$products.product_id",
+            _id: "$products.product_crypto_id",
             count:{
               $sum:+1,
             }
@@ -119,7 +121,7 @@ async function doLogin(logData){
       },
       {
         $project: {
-          products:"$products.product_id"
+          products:"$products.product_crypto_id"
         }
       },{
         $group: {
@@ -136,7 +138,7 @@ async function doLogin(logData){
     let userid = about.userId
    let productId  = about.proId
     if(about.Count == +1){
-   await kart.findOneAndUpdate({userId:about.userId},{$push:{products: {product_id:about.proId}}})
+   await kart.findOneAndUpdate({userId:about.userId},{$push:{products: {product_crypto_id:about.proId}}})
    
     }else if(about.Count == -1){
       let removingProductids = await kart.aggregate([
@@ -153,7 +155,7 @@ async function doLogin(logData){
         {
           $project: {
             id: "$products._id",
-            productId: "$products.product_id",
+            productId: "$products.product_crypto_id",
           },
         },
         {
@@ -171,20 +173,93 @@ async function doLogin(logData){
       ])
       await kart.findOneAndUpdate({userId:about.userId},{$pull:{products: {_id:removingProductids[0].id}}})
 
-
     } 
   })
  }
  async function deleteProductInUserKart(data){
-  console.log(data)  
   await kart.findOneAndUpdate({
       userId:data.userId
     },{$pull:{
         products:{
-          product_id:data.proId
+          product_crypto_id:data.proId
         }
     }})
  }
+ async function cartTotalAmount(userId){
+    let kartProductInfo = await kart.aggregate([
+      {
+        $match: {
+          userId: "6623c0bef2ab4ab8b8b6239f",
+        },
+      },
+      {
+        $unwind: {
+          path: "$products",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: '{ $toObjectId: "$products.product_crypto_id" }',
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+    ])
+ }
+ function findProductsKart(userid){
+  
+  return new Promise(async(resolve,reject)=>{
+    let kartProducts = await kart.aggregate(
+      [
+        {
+          $match: {
+            userId: userid,
+          },
+        },
+      
+        {
+          $unwind: {
+            path: "$products",
+          },
+        },
+        {
+          $group: {
+            _id: "$products.product_crypto_id",
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $lookup: {
+            from: "products",
+            localField: "_id",
+            foreignField: "cryptoId",
+            as: "productsDetails",
+          },
+        },
+        {
+          $unwind: {
+            path: "$productsDetails",
+          },
+        },
+      
+        {
+          $project: {
+            count: "$count",
+            name: "$productsDetails.name",
+            brand: "$productsDetails.brand",
+            Description: "$productsDetails.Description",
+            Price: "$productsDetails.Price",
+            cryptoId: "$productsDetails.cryptoId",
+          },
+        },
+      ]
+    )
+    resolve(kartProducts)
+   
+
+  })
+}
  
 module.exports={  
   doSignUp,
@@ -193,6 +268,7 @@ module.exports={
   kartFindProducts,
   kartCount,
   changeKartProductCount,
-  deleteProductInUserKart
-  
+  deleteProductInUserKart,
+  cartTotalAmount
+  ,findProductsKart
 }

@@ -10,11 +10,14 @@
           <input type="text" name="Name" class="form-control" value="{{product._doc.name}}" />
           <label for="">Brand</label>
           <input type="text" name="Brand" class="form-control" value="{{product._doc.brand}}" />
+           <label for="">Price</label>
+          <input type="number" name="Price" class="form-control" value="{{product._doc.Price}}" />
+          
           <label for="">Description</label>
-          <input type="text" name="Description" class="form-control" value="{{product._doc.Description}}" />
+         <input type="text" name="Description" class="form-control" value="{{product._doc.Description}}" />
           <label for="">Image</label>
           <br>
-          <img src="/images/{{product._doc._id}}.jpg" alt="" style="width: 300px;" id="preview-image">
+          <img src="/images/{{product._doc.cryptoId}}.jpg" alt="" style="width: 300px;" id="preview-image">
           <input type="file" name="Image" class="form-control" onchange="fileDisplay(event)" >
           <br>   
           <button type="submit" class="btn btn-success mt-4">Submit</button>

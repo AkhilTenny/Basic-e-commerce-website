@@ -185,27 +185,70 @@ async function doLogin(logData){
         }
     }})
  }
- async function cartTotalAmount(userId){
-    let kartProductInfo = await kart.aggregate([
-      {
-        $match: {
-          userId: "6623c0bef2ab4ab8b8b6239f",
+ async function cartTotalAmount(userid){
+   return new Promise(async(resolve,reject)=>{
+    let kartProductInfo = await kart.aggregate(
+      [
+        {
+          $match: {
+            userId: userid,
+          },
         },
-      },
-      {
-        $unwind: {
-          path: "$products",
+        {
+          $unwind: {
+            path: "$products",
+          },
         },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: '{ $toObjectId: "$products.product_crypto_id" }',
-          foreignField: "_id",
-          as: "product",
+        {
+          $project: {
+            id: "$products.product_crypto_id",
+          },
         },
-      },
-    ])
+        {
+          $group: {
+            _id: "$id",
+            number: {
+              $sum: 1,
+            },
+          },
+        },
+        {
+          $lookup: {
+            from: "products",
+            localField: "_id",
+            foreignField: "cryptoId",
+            as: "product",
+          },
+        },
+        {
+          $unwind: {
+            path: "$product",
+          },
+        },
+        {
+          $project: {
+            count:"$number",
+            name: "$product.name",
+            brand: "$product.brand",
+            Description: "$product.Description",
+            Price: "$product.Price",
+          },
+        },
+      ]
+    )
+    let totalAmount = 0
+    let currencyTotal = 0
+    for(let i=0;i<kartProductInfo.length;i++){
+     const amount =   kartProductInfo[i].count*kartProductInfo[i].Price;
+     totalAmount = amount+totalAmount
+     console.log(kartProductInfo[i].count)
+    }
+  currencyTotal = totalAmount.toLocaleString('en-US', { style: 'currency', currency: 'INR' });
+
+    resolve(currencyTotal)
+   })
+  
+    
  }
  function findProductsKart(userid){
   

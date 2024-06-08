@@ -80,10 +80,11 @@ router.get("/cart",checkLogedIn,(req,res)=>{
   //only to check the user is logged in 
 })    
 
-router.get("/cart/:id",checkLogedIn,(req,res)=>{
- 
+router.get("/cart/:id",checkLogedIn,async(req,res)=>{
+  total = await userHelpers.cartTotalAmount(req.params.id)
   userHelpers.findProductsKart(req.params.id).then((products)=>{
-  res.render("./users/cart", {  admin: false,user,products})
+  
+  res.render("./users/cart", {  admin: false,user,products,total})
   
   })
    
@@ -97,7 +98,8 @@ router.get("/add-kart/:id", async(req,res)=>{
 
 router.post('/changeProductCount',async(req,res)=>{
   userHelpers.changeKartProductCount(req.body)
-  res.json("hai")
+
+  res.json(await userHelpers.cartTotalAmount(req.body.userId))
 })
 
 router.post("/removeCartItem",async(req,res)=>{
@@ -105,7 +107,11 @@ router.post("/removeCartItem",async(req,res)=>{
   res.json("hai")
 })
 router.get('/place-order/:id',async(req,res)=>{
-  userHelpers.cartTotalAmount(req.params.id)
+  total = await userHelpers.cartTotalAmount(req.params.id)
+  const currencyTotal = total.toLocaleString('en-US', { style: 'currency', currency: 'INR' });
+
+  res.render("./users/place-order",{"total":total})
+
 })
   
 module.exports = router

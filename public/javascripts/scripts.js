@@ -23,10 +23,14 @@ function changeProductCount(proid,userid,count){
     success:(responce)=>{
       newCount = Number($('#item-count-'+proid).html()) + count
       if(newCount == 1){
-       
+         $('#total').html(responce)
+         console.log(responce)
         $("#count-dec-btn-"+proid).addClass('disabled').attr('disabled', true);
       }else if(newCount != 1){
         $("#count-dec-btn-"+proid).removeClass('disabled').removeAttr('disabled');
+        $('#total').html(responce)
+        console.log(responce)
+
       }
       
      

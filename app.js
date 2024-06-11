@@ -5,10 +5,12 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var exHBS = require('express-handlebars');
 var fileUpload = require('express-fileupload')
-var mongooseFile = require('./config/connection.js')
+  var mongooseFile = require('./config/connection.js')
 var session = require('express-session')
 const bodyParser = require('body-parser');
 const Handlebars = require('handlebars');
+const MongoStore =  require('connect-mongo');
+const mongoose = require('mongoose');
 
 
 //connect to Database
@@ -21,6 +23,8 @@ var adminRouter = require('./routes/admin');
 var userRouter = require('./routes/user');
 
 var app = express();
+
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -35,11 +39,16 @@ app.use(fileUpload())
 
 //express-session
 app.use(session({
+  
   secret: "Key",
   duration: 24 * 60 * 60 * 1000, 
   activeDuration: 1000 * 60 * 5,
   saveUninitialized: true,
-  resave: true
+  resave: true,
+  store: MongoStore.create({
+    mongoUrl: 'mongodb://localhost:27017/Shopping-site', // Replace with your MongoDB URI
+    collectionName: 'sessions' // Optional: specify the collection name
+  })
 }));
 
 app.use('/admin', adminRouter);

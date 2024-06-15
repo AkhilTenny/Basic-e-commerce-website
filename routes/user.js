@@ -114,9 +114,19 @@ router.get('/place-order/:id',async(req,res)=>{
 
 })
 router.post('/placeOrder',async(req,res)=>{
-  console.log(req.body)
-  userHelpers.placeOrder(req.body).then((value)=>{
+  userHelpers.MakeBill(req.body).then((products)=>{
     
+    userHelpers.addItemsToOrders(products,req.body.userid)
+    userHelpers.clearKart(req.body.userid)
+    
+  })
+ 
+})
+router.get('/view-orders/:id',(req,res)=>{
+ 
+  userHelpers.findOrderedProducts(req.params.id).then((value)=>{
+  
+    res.render('./users/orders',{"products":value})
   })
 })
   

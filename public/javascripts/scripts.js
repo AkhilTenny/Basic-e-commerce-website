@@ -52,7 +52,7 @@ function changeProductCount(proid,userid,count){
     })
   }
   function placeOrder(userid){
-    let adress = $("#address").val()
+    let address = $("#address").val()
     let pincode = $("#pincode").val()
     let mobileNo = $("#mobileNo").val()
 
@@ -61,7 +61,7 @@ function changeProductCount(proid,userid,count){
       $.ajax({
         url:'/placeOrder/',
         data:{
-          adress:adress,
+          address:address,
           pincode:pincode,
           paymentOption:paymentOption,
           userid:userid,

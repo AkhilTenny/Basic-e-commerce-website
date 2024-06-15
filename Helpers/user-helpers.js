@@ -24,11 +24,11 @@ const kart = mongoose.model('userKart',kartScheme)
 const billSchema = mongoose.Schema({
   userId: String,
   userName:String,
-  total:Number,
+  total:String,
   mobileNo:Number,
   address:String,
   pincode:Number,
-  paymentOptiion:String,
+  paymentOption:String,
   products:[{
     product_crypto_id:String,
     productName:String,
@@ -38,11 +38,24 @@ const billSchema = mongoose.Schema({
   paymentStatus:Boolean,
   ordered:Boolean,
   cancelStatus:Boolean,
+  date:String,
   
 })
 
 const bill = mongoose.model("bills",billSchema)
 
+const ordersSchema = mongoose.Schema({
+  userid:String,
+  products:[{
+    product_crypto_id:String,
+    productName:String,
+    productCount:Number,
+    date:String,
+  }]
+
+})
+
+const order = mongoose.model('orders',ordersSchema)
 
 async function doSignUp(userData){
   return new Promise(async(resolve,reject)=>{
@@ -156,6 +169,12 @@ async function doLogin(logData){
       }
     ]) 
     resolve(products.length)
+  })
+ }
+
+ async function findUserName(id){
+  return new Promise(async(resolve,reject)=>{
+    resolve(await user.findOne({_id:id},{username:1}))
   })
  }
 
@@ -328,32 +347,96 @@ async function doLogin(logData){
    })
 }
 
-async function CreateBill(data){
-  return New 
-}
-async function placeOrder(data){
+
+async function MakeBill(data){
   return new Promise(async(resolve,reject)=>{
     
-    const [totalAmount,products]= await Promise.all([
+    const [totalAmount,products,username]= await Promise.all([
       cartTotalAmount(data.userid),
-      findProductsKart(data.userid)
-
+      findProductsKart(data.userid),
+      findUserName(data.userid)
 
     ])
-    console.log(totalAmount,products,"data from frondend",data);
-  })
  
+    let productsSimpleObejct = products.map(item=>({
+      product_crypto_id:item.cryptoId,
+      productName:item.name ,
+      productCount:item.count,
+    }))
+    console.log(productsSimpleObejct)
+    newbill = new bill({
+      userId: data.userid,
+      userName:username.username,
+      total:totalAmount,
+      mobileNo:data.mobileNo,
+      address:data.address,
+      pincode:data.pincode,
+      paymentOption:data.paymentOption,
+      products:[...productsSimpleObejct],
+      deliveredStatus:false,
+      paymentStatus:false,
+      ordered:false,
+      cancelStatus:false,
+      date: new Date()
+    })
+      await newbill.save()
+
+   console.log("haida",data.userid)
+      resolve(productsSimpleObejct)
+  })
 }
+async function addItemsToOrders(products,userId) {
+  console.log(userId)
+  productsWithoutId = [];
+  products.forEach(element => {
+    element.date = new Date();
+    delete element._id
+    
+  });
+  if(await order.findOne({userid:userId})){
+    await order.findOneAndUpdate({userid:userId},{
+      $push:{products}
+    })
+  }else{
+    const newOrder = new order({
+      userid:userId,
+      Products:[]
+    })
+   await newOrder.save()
+
+   addItemsToOrders(products,userId)
+  }
+ 
+  }
+  
+function findOrderedProducts(id){
+ return new Promise(async(resolve,reject)=>{ 
+  let userOrders = await order.findOne({userid:id})
+  resolve(userOrders.products)
+ })
+}
+
+function clearKart(id){
+  return new Promise(async(resolve,reject)=>{
+    await kart.findOneAndDelete({userId:id})
+    resolve(true)
+  })
+}
+
  
 module.exports={  
-  doSignUp,
+  doSignUp, 
   doLogin,  
-  addToKart,
+  addToKart,  
   kartFindProducts,
   kartCount,
   changeKartProductCount,
   deleteProductInUserKart,
-  cartTotalAmount
-  ,findProductsKart,
-  placeOrder
+  cartTotalAmount,
+  findProductsKart,
+  MakeBill,
+  findUserName,
+  addItemsToOrders,
+  findOrderedProducts,
+  clearKart
 }

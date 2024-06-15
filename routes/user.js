@@ -109,9 +109,15 @@ router.post("/removeCartItem",async(req,res)=>{
 router.get('/place-order/:id',async(req,res)=>{
   total = await userHelpers.cartTotalAmount(req.params.id)
   const currencyTotal = total.toLocaleString('en-US', { style: 'currency', currency: 'INR' });
+  console.log(user.id)
+  res.render("./users/place-order",{"total":total,user})
 
-  res.render("./users/place-order",{"total":total})
-
+})
+router.post('/placeOrder',async(req,res)=>{
+  console.log(req.body)
+  userHelpers.placeOrder(req.body).then((value)=>{
+    
+  })
 })
   
 module.exports = router

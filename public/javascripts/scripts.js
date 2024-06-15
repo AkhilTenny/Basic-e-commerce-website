@@ -46,9 +46,34 @@ function changeProductCount(proid,userid,count){
         userId:userid
       },
       method:"POST",
-      success:(responce)=>{
-        location.reload()
+        success:(responce)=>{
+          location.reload()
       }
     })
+  }
+  function placeOrder(userid){
+    let adress = $("#address").val()
+    let pincode = $("#pincode").val()
+    let mobileNo = $("#mobileNo").val()
+
+    let paymentOption = $("input[name='payment-radio']:checked").val()
+    if(paymentOption == "payment-COD"){
+      $.ajax({
+        url:'/placeOrder/',
+        data:{
+          adress:adress,
+          pincode:pincode,
+          paymentOption:paymentOption,
+          userid:userid,
+          mobileNo:mobileNo
+        },
+        method:"POST",
+        success:(responce)=>{
+          console.log(responce)
+        }
+      })
+    }
+
+
   }
   

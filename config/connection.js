@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+  const mongoose = require('mongoose');
 
 // Your MongoDB connection URL
 const mongoURI = 'mongodb://localhost:27017/Shopping-site';
@@ -12,4 +12,4 @@ const connectDB = async () => {
   }
 };
 
-module.exports = {connectDB};
+module.exports = {connectDB,mongoURI};

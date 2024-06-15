@@ -2,6 +2,7 @@ const mongooseFile = require('../config/connection')
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const crypto = require("crypto")
+const productHelpers = require('./product-helpers')
 
 const usersSchema = mongoose.Schema({
   gmail:String,
@@ -15,8 +16,33 @@ const kartScheme = mongoose.Schema({
   userName:String,
   products: [{product_crypto_id:String}]
 })
-
 const kart = mongoose.model('userKart',kartScheme)
+
+
+//schema for bill
+
+const billSchema = mongoose.Schema({
+  userId: String,
+  userName:String,
+  total:Number,
+  mobileNo:Number,
+  address:String,
+  pincode:Number,
+  paymentOptiion:String,
+  products:[{
+    product_crypto_id:String,
+    productName:String,
+    productCount:Number
+  }],
+  deliveredStatus:Boolean,
+  paymentStatus:Boolean,
+  ordered:Boolean,
+  cancelStatus:Boolean,
+  
+})
+
+const bill = mongoose.model("bills",billSchema)
+
 
 async function doSignUp(userData){
   return new Promise(async(resolve,reject)=>{
@@ -299,19 +325,35 @@ async function doLogin(logData){
       ]
     )
     resolve(kartProducts)
-   
+   })
+}
 
+async function CreateBill(data){
+  return New 
+}
+async function placeOrder(data){
+  return new Promise(async(resolve,reject)=>{
+    
+    const [totalAmount,products]= await Promise.all([
+      cartTotalAmount(data.userid),
+      findProductsKart(data.userid)
+
+
+    ])
+    console.log(totalAmount,products,"data from frondend",data);
   })
+ 
 }
  
 module.exports={  
   doSignUp,
-  doLogin,
+  doLogin,  
   addToKart,
   kartFindProducts,
   kartCount,
   changeKartProductCount,
   deleteProductInUserKart,
   cartTotalAmount
-  ,findProductsKart
+  ,findProductsKart,
+  placeOrder
 }
